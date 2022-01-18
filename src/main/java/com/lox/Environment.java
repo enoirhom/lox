@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Environment {
     public final Environment enclosing;
-    private Map<String, Object> values = new HashMap<>();
+    private final Map<String, Object> values = new HashMap<>();
 
     Environment() {
         enclosing = null;
@@ -41,5 +41,21 @@ public class Environment {
         }
 
         throw new RuntimeError(name, "Unidentified variable '" + name.lexeme + "'.");
+    }
+
+    public Object getAt(int distance, String name) {
+        return ancestor(distance).values.get(name);
+    }
+
+    private Environment ancestor(int distance) {
+        Environment environment = this;
+        for (int i = 0; i < distance; i++) {
+            environment = environment.enclosing;
+        }
+        return environment;
+    }
+
+    public void assignAt(int distance, Token name, Object value) {
+        ancestor(distance).values.put(name.lexeme, value);
     }
 }
